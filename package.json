@@ -1,0 +1,1 @@
+{"name":"happy-x-mas","version":"1.0.0","description":"Merry Christmas 마을 서버 (친구와 함께하기)","main":"server.js","scripts":{"start":"node server.js"},"engines":{"node":">=18"},"license":"UNLICENSED","private":true}
