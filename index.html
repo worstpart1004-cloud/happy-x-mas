@@ -109,12 +109,12 @@
   #online small { color: #9aa8d0; }
   #chatLog { position: fixed; left: 16px; bottom: 90px; width: min(380px, 70vw); font-size: 14px; line-height: 1.55; color: #fff; text-shadow: 0 1px 3px #000; transition: opacity .6s; z-index: 4; pointer-events: none; }
   #chatLog > div { background: rgba(8,12,30,.5); border-radius: 8px; padding: 2px 8px; margin-top: 3px; width: fit-content; max-width: 100%; word-break: break-all; }
-  #chatDock { position: fixed; left: 14px; bottom: 14px; width: min(310px, 74vw); z-index: 6; background: rgba(8,12,32,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; backdrop-filter: blur(4px); }
+  #chatDock { position: fixed; left: 10px; bottom: 10px; width: min(280px, 60vw); z-index: 6; background: rgba(8,12,32,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; backdrop-filter: blur(4px); }
   #chatDock.typing { border-color: #ffd890; box-shadow: 0 0 14px rgba(255,216,144,.4); background: rgba(8,12,32,.88); }
   #chatHead { padding: 7px 10px; font-weight: 800; color: #ffe8b0; font-size: 13px; background: rgba(255,255,255,.06); cursor: pointer; user-select: none; }
   #chatHead small { font-weight: 400; color: #8a98c8; margin-left: 6px; font-size: 11px; }
   #chatBadge { display: none; background: #e8343a; color: #fff; border-radius: 9px; padding: 0 6px; font-size: 11px; margin-left: 4px; }
-  #chatMsgs { height: 118px; overflow-y: auto; padding: 6px 10px; font-size: 13.5px; line-height: 1.5; color: #fff; }
+  #chatMsgs { height: 96px; overflow-y: auto; padding: 6px 10px; font-size: 13.5px; line-height: 1.5; color: #fff; }
   #chatMsgs .cm { margin: 2px 0; word-break: break-all; } #chatMsgs .cm b { margin-right: 2px; }
   #chatMsgs .greet { margin-left: 6px; padding: 2px 8px; border-radius: 10px; border: none; background: #2a8a4a; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; }
   #chatMsgs .greet:disabled { background: #4a5a6a; cursor: default; }
@@ -125,9 +125,9 @@
   #chatDock .cl { display: none; } #chatDock.min .cl { display: inline; }
   #chatDock.min { width: auto; border-radius: 18px; } #chatDock.min #chatHead { padding: 7px 14px; }
   #chatHead .x { float: right; color: #c8d0f0; font-size: 14px; padding: 0 2px; }
-  body.mobile #chatDock { left: auto; right: 64px; bottom: auto; top: 50px; width: min(300px, 46vw); }
+  body.mobile #chatDock { left: 8px; bottom: 8px; width: min(230px, 40vw); } body.mobile #chatDock .chatRow { padding: 4px; } body.mobile #chatIn { padding: 5px 7px; font-size: 13px; }
   body.mobile #chatDock.min { width: auto; }
-  body.mobile #chatMsgs { height: 26vh; } body.mobile #online { top: 8px; right: auto; left: 50%; transform: translateX(-50%); font-size: 11px; padding: 4px 10px; line-height: 1.4; }
+  body.mobile #chatMsgs { height: 18vh; font-size: 12px; } body.mobile #online { top: 8px; right: auto; left: 50%; transform: translateX(-50%); font-size: 11px; padding: 4px 10px; line-height: 1.4; }
   body.mobile #online > div:not(.onHead) { display: none; } body.mobile #netWarn { top: auto; bottom: 8px; font-size: 11px; }
   body.mobile #pvCanvas { width: 150px; height: 190px; } body.mobile .mkLeft { width: 170px; } body.mobile .cuteTitle { font-size: 34px !important; } body.mobile #start .card { padding: 10px; }
   body.mobile .mkRight { max-height: 62vh; } body.mobile #editBar { bottom: 8px; } body.mobile #editBar button { padding: 6px 9px; font-size: 12px; }
@@ -150,6 +150,9 @@
   .mapKeys .mkR { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #dfe6ff; margin: 3px 0; } .mapKeys kbd { min-width: 54px; text-align: center; background: #2a3460; border-radius: 6px; padding: 2px 6px; font-size: 11.5px; color: #fff; border: 1px solid #4a5a9a; }
   #mapClose { padding: 9px; border-radius: 10px; border: none; background: #c8402a; color: #fff; font-weight: 800; cursor: pointer; font-family: inherit; }
   body.mobile .mapBox { padding: 8px; gap: 8px; } body.mobile #mapCv { width: auto; height: 80vh; max-height: 80vh; } body.mobile .mapR { width: 200px; } body.mobile .mapList button { padding: 4px 7px; font-size: 11px; }
+  #online { cursor: pointer; } #online .onHead { user-select: none; } #online .onRow { display: flex; align-items: center; gap: 4px; margin: 2px 0; }
+  #online .onRow button { border: none; background: rgba(255,255,255,.12); color: #fff; border-radius: 8px; padding: 1px 6px; cursor: pointer; font-size: 12px; } #online .onRow button:hover { background: rgba(255,216,144,.35); }
+  body.mobile #online.open > div:not(.onHead) { display: flex; }
   .toast { position: fixed; left: 50%; top: 70px; transform: translateX(-50%); background: rgba(20,60,40,.92); color: #fff; padding: 10px 18px; border-radius: 14px; font-size: 15px; z-index: 9; border: 2px solid #8ae8a8; transition: opacity .7s, transform .7s; }
   .toast.out { opacity: 0; transform: translate(-50%, -20px); }
   #wishModal { background: transparent; align-items: flex-end; pointer-events: none; }
@@ -1686,6 +1689,15 @@ function actionMenu() { if (ED.hold) return; const A = [];
   A.push(['닫기', () => { }]);
   openPanel({ title: '☰ 메뉴', info: '하고 싶은 걸 골라요!', cls: () => 'furnBtn', buttons: A.map(a => a[0]), press(i) { closeModal(); setTimeout(A[i][1], 30); } }); }
 
+// ---------- talk to a friend (click their character / list) ----------
+function peerHit(av, id) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.9, 0.9), M.invisible); m.position.y = 0.95; av.add(m); interact(m, '💬 ' + (NET.peers.get(id) ? NET.peers.get(id).nick : '친구') + '에게 말 걸기', () => talkTo(id), false); m.userData.label = '💬 친구에게 말 걸기'; setTimeout(() => { const P = NET.peers.get(id); if (P) m.userData.label = '💬 ' + P.nick + '에게 말 걸기'; }, 0); return m; }
+function talkTo(id) { const P = NET.peers.get(id); if (!P) return say('친구가 마을을 떠났어요.', 2); const n = P.nick;
+  openPanel({ title: '💬 ' + n, info: '무엇을 할까요? (대화는 모두에게 보이는 대화창으로 전해져요)', buttons: ['💬 말 걸기 (직접 쓰기)', `👋 "안녕 ${n}!"`, '☕ 차 마시자고 하기', '❄ 눈싸움 하자고 하기', '🛷 썰매 타자고 하기', '🥂 건배하기', '❤️ 하트 보내기', '닫기'],
+    press(i) { closeModal(); const pre = '@' + n + ' ';
+      if (i === 0) { chatOpen(); const inp = $('chatIn'); inp.value = pre; setTimeout(() => { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }, 40); }
+      if (i === 1) { sayMsg(pre + '안녕! 반가워 👋'); emote(0); } if (i === 2) sayMsg(pre + '하우스에서 따뜻한 차 한잔 할래? ☕'); if (i === 3) sayMsg(pre + '눈싸움 한 판 하자! ❄'); if (i === 4) sayMsg(pre + '썰매 타러 가자! 🛷');
+      if (i === 5) { sayMsg(pre + '건배~! 🥂'); if (ME.cup !== null) emote(5); else emote(0); } if (i === 6) { sayMsg(pre + '❤️'); emote(3); } } }); }
+
 // ================= 산타마을 — 캐릭터 꾸미기 =================
 const SHOEC = [0x5a3a22, 0x1a1a1e, 0xf4f0e8, 0xd8443a, 0x3a6ac8, 0xec88b0, 0xe8b83a, 0x3a8a5a];
 const SKINS = [0xf6d9c4, 0xf0c8a4, 0xe2b994, 0xcc9a70, 0xa8744c, 0x7a5032];
@@ -1775,22 +1787,22 @@ function buildAvatar(look) { const L = lkValid(look); const [skin, eyes, mouth, 
   // hair
   const hg = new THREE.Group(); hg.scale.set(1.07, 1, 1.03); head.add(hg); const B = (x, y, z, sx = 1, sy = 1, sz = 1) => mesh(CG2.ball, HM, hg, x, y, z).scale.set(sx, sy, sz);
   const capM = mesh(CG2.cap, HM, hg, 0, 0, 0); capM.rotation.x = -0.25;
-  if (hair !== 5 && hair !== 7) { B(-0.13, 0.14, 0.2, 1.1, 0.7, 0.6); B(0.0, 0.17, 0.23, 1.2, 0.7, 0.6); B(0.13, 0.14, 0.2, 1.1, 0.7, 0.6); }
+  const capped = hat === 0 || hat === 1; if (hair !== 5 && hair !== 7) { if (capped) { B(-0.12, 0.11, 0.21, 1.0, 0.55, 0.5); B(0.0, 0.125, 0.225, 1.1, 0.55, 0.5); B(0.12, 0.11, 0.21, 1.0, 0.55, 0.5); } else { B(-0.13, 0.14, 0.2, 1.1, 0.7, 0.6); B(0.0, 0.17, 0.23, 1.2, 0.7, 0.6); B(0.13, 0.14, 0.2, 1.1, 0.7, 0.6); } }
   if (hair === 1) { B(-0.27, -0.06, 0.02, 0.8, 1.5, 1.3); B(0.27, -0.06, 0.02, 0.8, 1.5, 1.3); B(0, -0.04, -0.2, 2.4, 1.6, 1.0); }
   if (hair === 2) { B(-0.27, -0.12, 0.0, 0.8, 2.4, 1.3); B(0.27, -0.12, 0.0, 0.8, 2.4, 1.3); B(0, -0.18, -0.2, 2.4, 2.8, 1.0); }
   if (hair === 3) [-1, 1].forEach(s => { B(s * 0.3, 0.02, -0.05, 0.6, 0.6, 0.6); B(s * 0.36, -0.14, -0.04, 0.75, 1.5, 0.75); mesh(CG2.bow, am(0xe8606a, 0.5), hg, s * 0.3, 0.06, -0.02).scale.setScalar(1.2); });
-  if (hair === 4) { B(0, 0.36, -0.06, 1.1, 1.0, 1.1); mesh(new THREE.TorusGeometry(0.09, 0.018, 6, 14), am(0xe8606a, 0.5), hg, 0, 0.29, -0.05).rotation.x = Math.PI / 2; }
-  if (hair === 5) for (let k = 0; k < 9; k++) { const a = k / 9 * Math.PI * 2; const c = mesh(new THREE.ConeGeometry(0.06, 0.16, 8), HM, hg, Math.cos(a) * 0.15, 0.27, Math.sin(a) * 0.15 + 0.02); c.rotation.set(Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6); }
-  if (hair === 5) { B(-0.1, 0.16, 0.22, 1, 0.6, 0.6); B(0.1, 0.16, 0.22, 1, 0.6, 0.6); }
+  if (hair === 4 && !capped) { B(0, 0.36, -0.06, 1.1, 1.0, 1.1); mesh(new THREE.TorusGeometry(0.09, 0.018, 6, 14), am(0xe8606a, 0.5), hg, 0, 0.29, -0.05).rotation.x = Math.PI / 2; }
+  if (hair === 5 && !capped) for (let k = 0; k < 9; k++) { const a = k / 9 * Math.PI * 2; const c = mesh(new THREE.ConeGeometry(0.06, 0.16, 8), HM, hg, Math.cos(a) * 0.15, 0.27, Math.sin(a) * 0.15 + 0.02); c.rotation.set(Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6); }
+  if (hair === 5) { if (capped) { B(-0.1, 0.115, 0.21, 1, 0.5, 0.5); B(0.1, 0.115, 0.21, 1, 0.5, 0.5); } else { B(-0.1, 0.16, 0.22, 1, 0.6, 0.6); B(0.1, 0.16, 0.22, 1, 0.6, 0.6); } }
   if (hair === 6) { B(0, 0.05, -0.33, 0.7, 0.7, 0.7); const t = mesh(new THREE.CylinderGeometry(0.075, 0.03, 0.32, 10), HM, hg, 0, -0.12, -0.38); t.rotation.x = 0.35; mesh(CG2.bow, am(0xffd23a, 0.5), hg, 0, 0.08, -0.36).scale.setScalar(1.3); }
-  if (hair === 7) for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, r = k % 2 ? 0.27 : 0.2; B(Math.cos(a) * r, 0.16 + (k % 3) * 0.05, Math.sin(a) * r - 0.02, 0.85, 0.85, 0.85); }
+  if (hair === 7) for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2, r = capped ? 0.3 : (k % 2 ? 0.27 : 0.2); if (capped && Math.sin(a) > 0.2) continue; B(Math.cos(a) * r, capped ? -0.02 + (k % 2) * 0.04 : 0.16 + (k % 3) * 0.05, Math.sin(a) * r - 0.02, 0.85, 0.85, 0.85); }
   // accessories
   if (acc === 1) { const sc = mesh(new THREE.TorusGeometry(0.115, 0.042, 8, 18), am(ac, 0.85), hip, 0, 0.44, 0); sc.rotation.x = Math.PI / 2; mesh(new THREE.BoxGeometry(0.06, 0.16, 0.03), am(ac, 0.85), hip, 0.06, 0.35, 0.15).rotation.z = 0.15; }
   if (acc === 2) { [-1, 1].forEach(s => mesh(new THREE.SphereGeometry(0.075, 12, 10), am(ac, 0.95), head, s * 0.32, -0.02, 0)); const b = mesh(new THREE.TorusGeometry(0.33, 0.016, 6, 18, Math.PI), am(new THREE.Color(ac).multiplyScalar(0.7).getHex(), 0.4), head, 0, -0.02, 0); }
   if (acc === 3) { mesh(new THREE.BoxGeometry(0.24, 0.26, 0.11), am(ac, 0.8), hip, 0, 0.22, -0.2); mesh(new THREE.BoxGeometry(0.17, 0.08, 0.03), am(new THREE.Color(ac).multiplyScalar(0.75).getHex(), 0.8), hip, 0, 0.15, -0.265); }
   // hats
-  if (hat === 0) { const c = mesh(new THREE.ConeGeometry(0.27, 0.42, 18), am(0xd8343a, 0.7), head, 0, 0.42, -0.04); c.rotation.x = -0.35; const b = mesh(new THREE.TorusGeometry(0.29, 0.06, 8, 20), am(0xffffff, 0.95), head, 0, 0.22, -0.01); b.rotation.x = Math.PI / 2 - 0.12; mesh(new THREE.SphereGeometry(0.06, 10, 8), am(0xffffff, 0.95), head, 0, 0.58, -0.2); }
-  if (hat === 1) { const c = mesh(new THREE.SphereGeometry(0.33, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), am(ac, 0.9), head, 0, 0.05, -0.01); c.rotation.x = -0.15; const r = mesh(new THREE.TorusGeometry(0.31, 0.045, 8, 22), am(new THREE.Color(ac).multiplyScalar(0.8).getHex(), 0.9), head, 0, 0.07, 0.0); r.rotation.x = Math.PI / 2 - 0.15; mesh(new THREE.SphereGeometry(0.08, 10, 8), am(0xffffff, 0.95), head, 0, 0.4, -0.06); }
+  if (hat === 0) { const c = mesh(new THREE.ConeGeometry(0.33, 0.48, 18), am(0xd8343a, 0.7), head, 0, 0.42, -0.04); c.rotation.x = -0.35; const b = mesh(new THREE.TorusGeometry(0.34, 0.07, 8, 20), am(0xffffff, 0.95), head, 0, 0.17, -0.01); b.rotation.x = Math.PI / 2 - 0.12; mesh(new THREE.SphereGeometry(0.06, 10, 8), am(0xffffff, 0.95), head, 0, 0.58, -0.2); }
+  if (hat === 1) { const c = mesh(new THREE.SphereGeometry(0.375, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.5), am(ac, 0.9), head, 0, 0.05, -0.01); c.rotation.x = -0.15; const r = mesh(new THREE.TorusGeometry(0.36, 0.05, 8, 22), am(new THREE.Color(ac).multiplyScalar(0.8).getHex(), 0.9), head, 0, 0.07, 0.0); r.rotation.x = Math.PI / 2 - 0.15; mesh(new THREE.SphereGeometry(0.08, 10, 8), am(0xffffff, 0.95), head, 0, 0.44, -0.06); }
   if (hat === 2) { [-1, 1].forEach(s => { const a = mesh(new THREE.CylinderGeometry(0.018, 0.026, 0.3, 6), am(0x7a4a2a, 0.8), head, s * 0.15, 0.36, -0.02); a.rotation.z = -s * 0.4; const b2 = mesh(new THREE.CylinderGeometry(0.014, 0.018, 0.14, 6), am(0x7a4a2a, 0.8), head, s * 0.24, 0.42, -0.02); b2.rotation.z = -s * 1.2; }); mesh(new THREE.SphereGeometry(0.04, 10, 8), MB(0xff2a2a), head, 0, -0.04, 0.315); }
   g.userData = { hip, head, aL: arm(-1), aR: arm(1), lL: leg(-1), lR: leg(1), base: 0.3, look: L, chibi: true, body }; g.userData.aL.userData = {}; return g; }
 
@@ -1814,6 +1826,7 @@ function creatorRandom() { ME.look = lkRandom(); creatorBuild(); previewUpdate()
 // ================= 산타마을 — online (room presence + db houses) =================
 const NET = { room: null, db: null, user: null, myId: null, peers: new Map(), canWrite: null, loaded: false, lastSent: '', sendT: 0, saveQ: new Map(), saving: false, status: 'connecting', why: '', tid: 't' + Math.random().toString(36).slice(2, 12), roomKey: {}, live: null };
 function localId() { try { let v = localStorage.getItem('cz_anon'); if (!v) { v = 'anon-' + Math.random().toString(36).slice(2, 10); localStorage.setItem('cz_anon', v); } return v; } catch (e) { return 'anon-tmp'; } }
+setInterval(() => { const t = performance.now(); NET.peers.forEach((P, k) => { if (!P.seenRoom && P.tsChg && t - P.tsChg > 9000) dropPeer(k); }); }, 2000);
 async function netInit() {
   NET.myId = localId(); loadLocalHouses();
   const C = window.claude && typeof window.claude.use === 'function' ? window.claude : null;
@@ -1842,7 +1855,7 @@ function loadLocalHouses() { try { const mh = localStorage.getItem('cz_myhouse')
 
 // ---------- room presence ----------
 function roomInit() { const R = NET.room;
-  try { R.onPeers(ch => { ch.joined.concat(ch.updated).forEach(p => upsertPeer(p, 'room')); ch.left.forEach(p => { const k = NET.roomKey[p.peer]; delete NET.roomKey[p.peer]; const P = k && NET.peers.get(k); if (!P) return; P.seenRoom = 0; if (!P.seenDb || performance.now() - P.seenDb > 20000) dropPeer(k); }); updOnline(); }, e => { NET.room = null; NET.why = NET.db ? 'dbonly' : 'noaccess'; netStatus(); }); } catch (e) { }
+  try { R.onPeers(ch => { ch.joined.concat(ch.updated).forEach(p => upsertPeer(p, 'room')); ch.left.forEach(p => { const k = NET.roomKey[p.peer]; delete NET.roomKey[p.peer]; const P = k && NET.peers.get(k); if (!P) return; P.seenRoom = 0; if (!P.tsChg || performance.now() - P.tsChg > 4000) dropPeer(k); }); updOnline(); }, e => { NET.room = null; NET.why = NET.db ? 'dbonly' : 'noaccess'; netStatus(); }); } catch (e) { }
   try { R.onConnection(c => { NET.conn = c; netStatus(); }, () => { }); } catch (e) { } }
 function myPresence() { const fy = ME.inH ? ME.inH.floor0 : +heightAt(player.x, player.z).toFixed(2); return { tid: NET.tid, n: ME.nick, lk: ME.look, x: +player.x.toFixed(2), z: +player.z.toFixed(2), fy, r: +yaw.toFixed(2), a: ME.anim, sy: ME.sitting ? +(ME.sitting.y - fy).toFixed(2) : 0, cup: ME.cup, say: ME.say, emo: ME.emo, bear: ME.bear || null, sb: ME.sb || null, gn: ME.gn || null, pl: ME.inH ? ME.inH.name : '광장', hs: ME.house }; }
 function sendPresence(dt) { if (!NET.room || !CG.started) return; NET.sendT += dt; if (NET.sendT < 0.1) return; NET.sendT = 0; const p = myPresence(), s = JSON.stringify(p); if (s === NET.lastSent) return; NET.lastSent = s; NET.room.presence(p).catch(() => { }); }
@@ -1850,25 +1863,28 @@ function num(v, d, lo, hi) { v = +v; return isFinite(v) ? Math.max(lo, Math.min(
 const ANIMS = new Set(['stand', 'walk', 'sit', 'sip', 'wave', 'dance', 'laugh', 'heart', 'bow', 'cheers', 'throw', 'sled']);
 function upsertPeer(p, via) { if (p.sameTab || p.kind !== 'viewer') return; const pr = p.presence || {}; if (typeof pr.n !== 'string') return; const key = typeof pr.tid === 'string' && /^t[a-z0-9]{4,14}$/.test(pr.tid) ? pr.tid : p.peer; if (key === NET.tid) return; if (via === 'room') NET.roomKey[p.peer] = key;
   let P = NET.peers.get(key); const look = lkValid(pr.lk), lks = look.join(','), col = look[7], nick = cleanNick(pr.n) || '이웃';
-  if (!P || P.lks !== lks || P.nick !== nick) { const old = P; if (old) scene.remove(old.av); const av = makeAvatar(look, nick + (p.isMe ? ' (나·다른 탭)' : '')); P = { id: key, sbK: old ? old.sbK : (pr.sb && pr.sb.k), av, col, lks, nick, sayK: old ? old.sayK : (pr.say && pr.say.k), emoK: old ? old.emoK : (pr.emo && pr.emo.k), cup: null, cupM: null, ph: 0, t: 0, x: num(pr.x, 0, -100, 100), z: num(pr.z, 0, -100, 100) }; av.position.set(P.x, 0, P.z); NET.peers.set(key, P); if (!old) { chatLog('🔔', nick + ' 님이 마을에 왔어요!', '#9ad8ff', greetBtn(nick)); toast(`🔔 <b>${nick.replace(/[<>&]/g, '')}</b> 님이 마을에 왔어요! 채팅창에서 인사해 봐요 👋`); tone(988, 0.1, 'triangle', 0.05); tone(1319, 0.14, 'triangle', 0.05, 0.1); } }
+  if (!P || P.lks !== lks || P.nick !== nick) { const old = P; if (old) scene.remove(old.av); if (old && old.hit) removeInteract(old.hit); const av = makeAvatar(look, nick + (p.isMe ? ' (나·다른 탭)' : '')); P = { hit: null, id: key, sbK: old ? old.sbK : (pr.sb && pr.sb.k), av, col, lks, nick, sayK: old ? old.sayK : (pr.say && pr.say.k), emoK: old ? old.emoK : (pr.emo && pr.emo.k), cup: null, cupM: null, ph: 0, t: 0, x: num(pr.x, 0, -100, 100), z: num(pr.z, 0, -100, 100) }; av.position.set(P.x, 0, P.z); NET.peers.set(key, P); P.hit = peerHit(av, key); if (!old) { chatLog('🔔', nick + ' 님이 마을에 왔어요!', '#9ad8ff', greetBtn(nick)); toast(`🔔 <b>${nick.replace(/[<>&]/g, '')}</b> 님이 마을에 왔어요! 채팅창에서 인사해 봐요 👋`); tone(988, 0.1, 'triangle', 0.05); tone(1319, 0.14, 'triangle', 0.05, 0.1); } }
   P.gn = Array.isArray(pr.gn) && Number.isInteger(pr.gn[0]) && pr.gn[0] >= 0 && pr.gn[0] < GON.N && (pr.gn[1] === 0 || pr.gn[1] === 1) ? [pr.gn[0], pr.gn[1]] : null;
   if (via === 'db') P.seenDb = performance.now(); else P.seenRoom = performance.now();
   P.tx = num(pr.x, P.x, -100, 100); P.tz = num(pr.z, P.z, -100, 100); P.fy = num(pr.fy, 0, 0, 10); P.tr = num(pr.r, 0, -100, 100); P.a = ANIMS.has(pr.a) ? pr.a : 'stand'; P.sy = num(pr.sy, 0.46, 0, 1.2); P.pl = typeof pr.pl === 'string' ? cleanNick(pr.pl) : ''; P.hs = Number.isInteger(pr.hs) ? pr.hs : null;
   const cup = Number.isInteger(pr.cup) && pr.cup >= 0 && pr.cup < TEAS.length ? pr.cup : null; if (cup !== P.cup) { if (P.cupM) P.cupM.parent.remove(P.cupM); P.cupM = cup === null ? null : cupMesh(P.av, cup); P.cup = cup; }
-  if (pr.say && typeof pr.say === 'object' && pr.say.k !== P.sayK) { P.sayK = pr.say.k; const m = cleanMsg(pr.say.m); if (m) { bubbleOn(P.av, m); chatLog(nick, m, COLHEX[col]); tone(1200, 0.05, 'sine', 0.03); } }
+  if (pr.say && typeof pr.say === 'object' && pr.say.k !== P.sayK) { P.sayK = pr.say.k; const m = cleanMsg(pr.say.m); if (m) { bubbleOn(P.av, m); chatLog(nick, m, COLHEX[col]); tone(1200, 0.05, 'sine', 0.03); if (ME.nick && m.includes('@' + ME.nick)) { toast(`💬 <b>${nick.replace(/[<>&]/g, '')}</b> 님이 말을 걸었어요: ${m.replace(/[<>&]/g, '').slice(0, 40)}`); tone(988, 0.1, 'triangle', 0.06); tone(1319, 0.12, 'triangle', 0.06, 0.1); } } }
   if (pr.bear && typeof pr.bear === 'object' && pr.bear.k !== P.bearK) { const first = P.bearK === undefined; P.bearK = pr.bear.k; if (!first && !BEAR.on && Number.isInteger(pr.bear.i) && CZ.smen[pr.bear.i]) bearStart(pr.bear.i, true); }
   if (pr.sb && typeof pr.sb === 'object' && pr.sb.k !== P.sbK) { P.sbK = pr.sb.k; peerThrow(P, pr.sb); }
   if (pr.emo && typeof pr.emo === 'object' && pr.emo.k !== P.emoK) { P.emoK = pr.emo.k; const e = EMO[pr.emo.e | 0]; if (e) bubbleOn(P.av, e[0] + ' ' + e[1]); } }
-function dropPeer(id) { const P = NET.peers.get(id); if (!P) return; scene.remove(P.av); NET.peers.delete(id); chatLog('👋', P.nick + ' 님이 집에 갔어요.', '#9ad8ff'); updOnline(); }
+function dropPeer(id) { const P = NET.peers.get(id); if (!P) return; scene.remove(P.av); if (P.hit) removeInteract(P.hit); NET.peers.delete(id); chatLog('👋', P.nick + ' 님이 집에 갔어요.', '#9ad8ff'); updOnline(); }
 function peersTick(dt) { NET.peers.forEach(P => { const av = P.av; if (P.gn) { const gp = gonPos(P.gn[0]), sp = gonSeatWorld(gp, P.gn[1]); av.position.set(sp.x, gp.y, sp.z); av.rotation.y = P.gn[1] ? -Math.PI / 2 : Math.PI / 2; P.tx = sp.x; P.tz = sp.z; av.userData.seat = 0.62; animAvatar(av, 'sit', 0, 0); return; } const dx = P.tx - av.position.x, dz = P.tz - av.position.z, d = Math.hypot(dx, dz);
     if (d > 8) { av.position.x = P.tx; av.position.z = P.tz; } else { const k = Math.min(1, dt * 8); av.position.x += dx * k; av.position.z += dz * k; }
     av.position.y = P.fy || 0; av.rotation.y = angLerp(av.rotation.y, P.tr + Math.PI, Math.min(1, dt * 10)); const moving = d > 0.03 && P.a !== 'sit'; P.ph += dt * 7; P.t += dt;
     av.userData.seat = P.sy; const sled = P.a === 'sled'; if (sled && !P.sledM) { P.sledM = sledMesh(0xd8343a); av.add(P.sledM); } if (P.sledM) P.sledM.visible = sled; animAvatar(av, sled ? 'sled' : moving ? 'walk' : P.a, P.ph, P.t);
     if (av.userData.bub) { av.userData.bubT -= dt; if (av.userData.bubT <= 0) { av.remove(av.userData.bub); av.userData.bub = null; } } }); }
 function updOnline() { const box = $('online'); if (!box) return; box.innerHTML = ''; const h = document.createElement('div'); h.className = 'onHead';
-  h.textContent = NET.status === 'online' ? `🟢 지금 마을에 ${NET.peers.size + 1}명` : '🔵 혼자 모드 (친구와 연결 안 됨)'; box.appendChild(h);
-  const row = (nick, col, pl, me) => { const r = document.createElement('div'); const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = COLHEX[col]; const n = document.createElement('b'); n.textContent = nick + (me ? ' (나)' : ''); const w = document.createElement('small'); w.textContent = ' · ' + (pl || ''); r.appendChild(dot); r.appendChild(n); r.appendChild(w); box.appendChild(r); };
-  row(ME.nick, ME.col, ME.inH ? ME.inH.name : '광장', true); NET.peers.forEach(P => row(P.nick, P.col, P.pl)); }
+  h.textContent = (NET.status === 'online' ? `🟢 지금 마을에 ${NET.peers.size + 1}명` : '🔵 혼자 모드 (친구와 연결 안 됨)') + (NET.listOpen ? ' ▲' : ' ▼'); box.appendChild(h);
+  h.onclick = e => { e.stopPropagation(); NET.listOpen = !NET.listOpen; updOnline(); }; box.classList.toggle('open', !!NET.listOpen); if (!NET.listOpen) return;
+  const row = (nick, col, pl, me, id) => { const r = document.createElement('div'); r.className = 'onRow'; const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = COLHEX[col]; const n = document.createElement('b'); n.textContent = nick + (me ? ' (나)' : ''); const w = document.createElement('small'); w.textContent = ' · ' + (pl || ''); r.appendChild(dot); r.appendChild(n); r.appendChild(w);
+    if (!me) { const t = document.createElement('button'); t.textContent = '💬'; t.title = '말 걸기'; t.onclick = e => { e.stopPropagation(); talkTo(id); }; const g = document.createElement('button'); g.textContent = '📍'; g.title = '찾아가기'; g.onclick = e => { e.stopPropagation(); const P = NET.peers.get(id); if (P) goTo(P.av.position.x + 1.2, P.av.position.z + 1.2, Math.atan2(1.2, 1.2)); }; r.appendChild(t); r.appendChild(g); } box.appendChild(r); };
+  row(ME.nick, ME.col, ME.inH ? ME.inH.name : '광장', true); NET.peers.forEach((P, id) => row(P.nick, P.col, P.pl, false, id)); if (!NET.peers.size) { const e = document.createElement('div'); e.className = 'onRow'; e.innerHTML = '<small>아직 다른 친구가 없어요</small>'; box.appendChild(e); } }
+
 function netStatus() { const s = $('netSt'); if (s) s.innerHTML = netMsg(); updOnline(); const w = $('netWarn'); if (w) { const bad = (NET.status !== 'online' && NET.why !== 'file') || NET.canWrite === false; w.style.display = bad && CG.started ? 'block' : 'none'; w.innerHTML = netMsg(true); } }
 function netMsg(short) { if (NET.status === 'connecting') return '⏳ 마을에 연결하는 중… (오랜만이면 서버가 깨어나는 데 최대 1분 걸려요)';
   if (NET.why === 'file') return short ? '' : '🎄 혼자 모드 — 이 링크에서는 <b>혼자</b> 마을을 즐겨요. 꾸민 집 · 눈사람 · 소원은 <b>이 기기</b>에 저장돼요.';
@@ -1879,11 +1895,10 @@ function netMsg(short) { if (NET.status === 'connecting') return '⏳ 마을에 
 // ---------- db fallback for presence (so friends who can't join the live room still meet) ----------
 function liveInit() { const db = NET.db; NET.live = { last: '', lastT: 0, busy: false, acc: 0 };
   try { db.collection('live').onSnapshot(snap => { const now = Date.now(); let cleaned = 0; snap.docs.forEach(d => { if (!d.exists || d.id === NET.tid) return; const b = d.data() || {}; const age = now - (+b.ts || 0);
-      if (age < 30000) upsertPeer({ peer: 'db-' + d.id, sameTab: false, isMe: false, kind: 'viewer', presence: b }, 'db'); else if (age > 600000 && NET.canWrite && cleaned < 4) { cleaned++; db.doc('live/' + d.id).delete().catch(() => { }); } }); updOnline(); }, () => { }); } catch (e) { }
-  setInterval(() => { const t = performance.now(); NET.peers.forEach((P, k) => { if (P.seenDb && !P.seenRoom && t - P.seenDb > 25000) dropPeer(k); }); }, 4000);
-  addEventListener('pagehide', () => { try { db.doc('live/' + NET.tid).delete(); } catch (e) { } }); }
+      if (age < 12000 && b.gone !== true) { upsertPeer({ peer: 'db-' + d.id, sameTab: false, isMe: false, kind: 'viewer', presence: b }, 'db'); const P = NET.peers.get(typeof b.tid === 'string' ? b.tid : 'db-' + d.id); if (P && P.lastTs !== b.ts) { P.lastTs = b.ts; P.tsChg = performance.now(); } } else if (b.gone === true || age >= 12000) { const k = typeof b.tid === 'string' ? b.tid : 'db-' + d.id; const P = NET.peers.get(k); if (P && !P.seenRoom) dropPeer(k); } if (age > 600000 && NET.canWrite && cleaned < 4) { cleaned++; db.doc('live/' + d.id).delete().catch(() => { }); } }); updOnline(); }, () => { }); } catch (e) { }
+  const bye = () => { try { db.doc('live/' + NET.tid).set({ tid: NET.tid, gone: true, ts: Date.now() }); db.doc('live/' + NET.tid).delete(); } catch (e) { } }; addEventListener('pagehide', bye); addEventListener('beforeunload', bye); }
 async function liveTick(dt) { const L = NET.live; if (!L || !CG.started || L.busy || NET.canWrite === false) return; L.acc += dt; if (L.acc < 0.9) return; L.acc = 0;
-  const p = myPresence(), s = JSON.stringify(p), now = Date.now(); if (s === L.last && now - L.lastT < 6000) return; L.busy = true;
+  const p = myPresence(), s = JSON.stringify(p), now = Date.now(); if (s === L.last && now - L.lastT < 3000) return; L.busy = true;
   try { await NET.db.doc('live/' + NET.tid).set(Object.assign({}, p, { ts: now })); L.last = s; L.lastT = now; NET.canWrite = true; } catch (e) { if (e && (e.code === 'invalid_argument' || e.code === 'revoked' || e.code === 'not_granted')) { NET.canWrite = false; netStatus(); } } finally { L.busy = false; } }
 
 // ================= 산타마을 — 눈싸움 & 눈사람 =================
@@ -2225,9 +2240,11 @@ function bearTick(dt) { if (!BEAR.on) return; const H = CZ.houses[0]; const insi
   if (!b) return; if (BEAR.phase === 'roar') { b.rotation.y = Math.atan2(player.x - b.position.x, player.z - b.position.z); if (BEAR.t > 1.6) { BEAR.phase = 'chase'; BEAR.t = 0; say('🐻‍❄️ <b>북극곰이 쫓아온다!!</b> 빨리 <b>하우스로 대피</b>하세요! ' + KK('(달리기 Shift)', '(왼쪽을 끝까지 끌면 달리기)'), 4); } return; }
   if (inside && !BEAR.safe) { BEAR.safe = true; BEAR.safeT = 0; say('🏠 휴~ 무사히 대피했다! 곰이 떠날 때까지 하우스 안에서 기다려요…', 4); tone(784, 0.15, 'triangle', 0.06); tone(1047, 0.2, 'triangle', 0.06, 0.15); }
   if (!inside && BEAR.safe) { BEAR.safe = false; say('😱 밖에 아직 곰이 있어요! 다시 하우스로!', 2.5); }
-  if (BEAR.safe) BEAR.safeT += dt; const leave = BEAR.phase === 'leave' || BEAR.safeT > 14 || BEAR.t > 70;
-  let tx = player.x, tz = player.z, sp = 3.9; if (BEAR.pause > 0) { BEAR.pause -= dt; sp = 0; }
-  if (inside) { const d = hLocal(H, Math.sin(BEAR.t * 0.5) * 4, HD / 2 + 3.5); tx = d[0]; tz = d[1]; sp = 2.2; if (Math.random() < dt * 0.25) roar(); }
+  const outs = []; if (!inside) outs.push({ x: player.x, z: player.z, me: true }); NET.peers.forEach(P => { const q = P.av.position; if (!inHouse(H, q.x, q.z, -0.3) && !P.gn) outs.push({ x: q.x, z: q.z, nick: P.nick }); });
+  let tgt = null, bd = 1e9; outs.forEach(o => { const d = Math.hypot(o.x - b.position.x, o.z - b.position.z); if (d < bd && d < 45) { bd = d; tgt = o; } }); if (tgt && BEAR.tgtN !== (tgt.me ? '나' : tgt.nick)) { BEAR.tgtN = tgt.me ? '나' : tgt.nick; if (!tgt.me && BEAR.phase === 'chase') chatLog('🐻‍❄️', '북극곰이 ' + tgt.nick + ' 님을 쫓아가요!', '#ffb0a0'); }
+  if (!tgt) BEAR.safeT += dt; else BEAR.safeT = Math.max(0, BEAR.safeT - dt * 0.5); const leave = BEAR.phase === 'leave' || BEAR.safeT > 14 || BEAR.t > 70;
+  let tx = tgt ? tgt.x : player.x, tz = tgt ? tgt.z : player.z, sp = 3.9; if (BEAR.pause > 0) { BEAR.pause -= dt; sp = 0; }
+  if (!tgt) { const d = hLocal(H, Math.sin(BEAR.t * 0.5) * 4, HD / 2 + 3.5); tx = d[0]; tz = d[1]; sp = 2.2; if (Math.random() < dt * 0.25) roar(); }
   if (leave) { if (BEAR.phase !== 'leave') { BEAR.phase = 'leave'; BEAR.lt = 0; say('🐻‍❄️ 곰이 심심했는지 눈밭으로 돌아간다…', 3); } BEAR.lt += dt; tx = b.position.x + (b.position.x - H.x) * 5; tz = b.position.z + 40; sp = 3; if (BEAR.lt > 5) return bearEnd(); }
   const dx = tx - b.position.x, dz = tz - b.position.z, d = Math.hypot(dx, dz); if (d > 0.3 && sp > 0) { const st = Math.min(d, sp * dt); let nx = b.position.x + dx / d * st, nz = b.position.z + dz / d * st; [nx, nz] = collide(nx, nz); if (inHouse(H, nx, nz, -1.4)) { nx = b.position.x; nz = b.position.z; } b.position.x = nx; b.position.z = nz; b.rotation.y = angLerp(b.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 6)); BEAR.legs.forEach((l, k) => l.rotation.x = Math.sin(BEAR.t * 9 + (k % 2 ? 0 : Math.PI) + (k > 1 ? Math.PI / 2 : 0)) * 0.5); }
   else BEAR.legs.forEach(l => l.rotation.x *= 0.9);
