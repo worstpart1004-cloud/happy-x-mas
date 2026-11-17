@@ -1543,8 +1543,9 @@ function buildVillage() {
   const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); const sp = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.13, transparent: true, opacity: 0.85, depthWrite: false })); sp.userData.dyn = true; scene.add(sp);
   every(dt => { const H = CZ.houses[0], ox = player.x, oz = player.z; for (let i = 0; i < N; i++) { let y = pos[i * 3 + 1] - dt * (1.1 + (i % 5) * 0.15); const wx = pos[i * 3] + ox, wz = pos[i * 3 + 2] + oz; let floor = 0;
     if (H) { const [lx, lz] = hWorldToLocal(H, wx, wz); if (Math.abs(lx) < HW / 2 + 0.55 && Math.abs(lz) < HD / 2 + 0.8) floor = WH + 4.2 * Math.max(0, 1 - Math.abs(lz) / (HD / 2 + 0.8)); }
+    if (!floor && clubIn(wx, wz, -0.4)) floor = CLUB.H + 0.4;
     if (!floor && wx > HILL.x0 && wz < HILL.zBot) floor = heightAt(wx, wz); if (y < floor) y += 40; pos[i * 3 + 1] = y; pos[i * 3] += Math.sin(clockT + i) * dt * 0.2; } geo.attributes.position.needsUpdate = true; sp.position.set(ox, 0, oz); });
-  buildArcade(); roofSnowDrops();
+  buildClub(); buildArcade(); roofSnowDrops();
   buildBulbs(); XM.bulbs.userData.dyn = true; }
 function sitBench(x, z, ry) { let best = null, bd = 9; CZ.seats.forEach(s => { const d = Math.hypot(s.x - player.x, s.z - player.z); if (d < bd && Math.hypot(s.x - x, s.z - z) < 1.2) { bd = d; best = s; } }); if (best) sitAt(best); }
 
@@ -1589,7 +1590,7 @@ function playPiano() { if (pianoBusy) return; pianoBusy = true; ME.emo = { e: 6,
   seq.forEach((n, i) => { if (n !== '-') { tone(N[n], 0.32, 'triangle', 0.09, i * 0.22); tone(N[n] / 2, 0.3, 'sine', 0.04, i * 0.22); } }); setTimeout(() => pianoBusy = false, seq.length * 220); }
 
 // ---------- tea ----------
-function teaMenu(where) { if (ED.hold) return; openPanel({ title: '🫖 ' + where, info: KK('어떤 차를 마실까? 받은 뒤 <b>V</b>로 홀짝홀짝 마셔요.', '어떤 차를 마실까? 받은 뒤 <b>☰ 메뉴 → 차 마시기</b>로 홀짝홀짝!'), buttons: TEAS.map(t => t[0] + ' ' + t[1]).concat(['그만두기']), press(i) { closeModal(); if (i < TEAS.length) brewTea(i); } }); }
+function teaMenu(where) { if (ED.hold) return; openPanel({ title: '🫖 ' + where, info: KK('어떤 차를 마실까? 받은 뒤 <b>V</b>로 홀짝홀짝 마셔요.', '어떤 차를 마실까? 받은 뒤 <b>☰ 메뉴 → 차 마시기</b>로 홀짝홀짝!'), buttons: TEAS.slice(0, 6).map(t => t[0] + ' ' + t[1]).concat(['그만두기']), press(i) { closeModal(); if (i < 6) brewTea(i); } }); }
 function brewTea(i) { say('보글보글… 물 끓는 소리 🔥', 1.4); for (let k = 0; k < 8; k++) tone(300 + Math.random() * 500, 0.05, 'sine', 0.03, k * 0.12);
   setTimeout(() => { ME.cup = i; ME.sips = 5; makeCupView(); tone(880, 0.1, 'triangle', 0.06); tone(1175, 0.15, 'triangle', 0.05, 0.08); say(`${TEAS[i][0]} <b>${TEAS[i][1]}</b> 한 잔 완성! ` + KK('<b>V</b> 마시기 · <b>6</b> 건배', '<b>☰ 메뉴</b>에서 마시기 · 건배'), 3.2); }, 1100); }
 function makeCupView() { if (cupView) camera.remove(cupView); cupView = null; if (ME.cup === null) return; const g = new THREE.Group(); const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.06, 0.13, 18, 1, true), MS(COLORS[ME.col], 0.5, { side: THREE.DoubleSide })); g.add(mug);
@@ -2257,17 +2258,17 @@ function bearStart(i, remote) { const S0 = CZ.smen[i]; if (!S0 || BEAR.on) retur
     splat(S0.x, 1.0, S0.z, true); splat(S0.x, 1.6, S0.z, true); BEAR.g = bearMesh(); BEAR.g.position.set(S0.x, 0, S0.z); scene.add(BEAR.g); BEAR.phase = 'roar'; BEAR.t = 0; roar(); });
   say(remote ? '⛄❗ 어디선가 눈사람이 들썩인다… 북극곰이다!!' : '⛄ …어? 눈사람이 부들부들 떨린다?!', 2); evacuate(); alertOn(); }
 function roar() { tone(90, 1.1, 'sawtooth', 0.12); tone(70, 1.2, 'square', 0.06, 0.05); noise(1.0, 'lowpass', 300, 0.14); if (BEAR.mouth) tween(1.0, e => BEAR.mouth.scale.y = 0.4 + Math.sin(e * Math.PI) * 1.2); }
-function bearTick(dt) { if (!BEAR.on) return; const H = CZ.houses[0]; const inside = !!ME.inH; BEAR.t += dt; const b = BEAR.g; alertTick();
+function bearTick(dt) { if (!BEAR.on) return; const H = CZ.houses[0]; const inside = !!ME.inH || clubIn(player.x, player.z, 0.3); BEAR.t += dt; const b = BEAR.g; alertTick();
   if (!b) return; if (BEAR.phase === 'roar') { b.rotation.y = Math.atan2(player.x - b.position.x, player.z - b.position.z); if (BEAR.t > 1.6) { BEAR.phase = 'chase'; BEAR.t = 0; say('🐻‍❄️ <b>북극곰이 쫓아온다!!</b> 빨리 <b>하우스로 대피</b>하세요! ' + KK('(달리기 Shift)', '(왼쪽을 끝까지 끌면 달리기)'), 4); } return; }
   if (inside && !BEAR.safe) { BEAR.safe = true; BEAR.safeT = 0; say('🏠 휴~ 무사히 대피했다! 곰이 떠날 때까지 하우스 안에서 기다려요…', 4); tone(784, 0.15, 'triangle', 0.06); tone(1047, 0.2, 'triangle', 0.06, 0.15); }
   if (!inside && BEAR.safe) { BEAR.safe = false; say('😱 밖에 아직 곰이 있어요! 다시 하우스로!', 2.5); }
-  const outs = []; if (!inside) outs.push({ x: player.x, z: player.z, me: true }); NET.peers.forEach(P => { const q = P.av.position; if (!inHouse(H, q.x, q.z, -0.3) && !P.gn) outs.push({ x: q.x, z: q.z, nick: P.nick }); });
+  const outs = []; if (!inside) outs.push({ x: player.x, z: player.z, me: true }); NET.peers.forEach(P => { const q = P.av.position; if (!inHouse(H, q.x, q.z, -0.3) && !clubIn(q.x, q.z, 0.3) && !P.gn) outs.push({ x: q.x, z: q.z, nick: P.nick }); });
   let tgt = null, bd = 1e9; outs.forEach(o => { const d = Math.hypot(o.x - b.position.x, o.z - b.position.z); if (d < bd && d < 45) { bd = d; tgt = o; } }); if (tgt && BEAR.tgtN !== (tgt.me ? '나' : tgt.nick)) { BEAR.tgtN = tgt.me ? '나' : tgt.nick; if (!tgt.me && BEAR.phase === 'chase') chatLog('🐻‍❄️', '북극곰이 ' + tgt.nick + ' 님을 쫓아가요!', '#ffb0a0'); }
   if (!tgt) BEAR.safeT += dt; else BEAR.safeT = Math.max(0, BEAR.safeT - dt * 0.5); const leave = BEAR.phase === 'leave' || BEAR.safeT > 14 || BEAR.t > 70;
   let tx = tgt ? tgt.x : player.x, tz = tgt ? tgt.z : player.z, sp = 3.9; if (BEAR.pause > 0) { BEAR.pause -= dt; sp = 0; }
   if (!tgt) { const d = hLocal(H, Math.sin(BEAR.t * 0.5) * 4, HD / 2 + 3.5); tx = d[0]; tz = d[1]; sp = 2.2; if (Math.random() < dt * 0.25) roar(); }
   if (leave) { if (BEAR.phase !== 'leave') { BEAR.phase = 'leave'; BEAR.lt = 0; say('🐻‍❄️ 곰이 심심했는지 눈밭으로 돌아간다…', 3); } BEAR.lt += dt; tx = b.position.x + (b.position.x - H.x) * 5; tz = b.position.z + 40; sp = 3; if (BEAR.lt > 5) return bearEnd(); }
-  const dx = tx - b.position.x, dz = tz - b.position.z, d = Math.hypot(dx, dz); if (d > 0.3 && sp > 0) { const st = Math.min(d, sp * dt); let nx = b.position.x + dx / d * st, nz = b.position.z + dz / d * st; [nx, nz] = collide(nx, nz); if (inHouse(H, nx, nz, -1.4)) { nx = b.position.x; nz = b.position.z; } b.position.x = nx; b.position.z = nz; b.rotation.y = angLerp(b.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 6)); BEAR.legs.forEach((l, k) => l.rotation.x = Math.sin(BEAR.t * 9 + (k % 2 ? 0 : Math.PI) + (k > 1 ? Math.PI / 2 : 0)) * 0.5); }
+  const dx = tx - b.position.x, dz = tz - b.position.z, d = Math.hypot(dx, dz); if (d > 0.3 && sp > 0) { const st = Math.min(d, sp * dt); let nx = b.position.x + dx / d * st, nz = b.position.z + dz / d * st; [nx, nz] = collide(nx, nz); if (inHouse(H, nx, nz, -1.4) || clubIn(nx, nz, -1.4)) { nx = b.position.x; nz = b.position.z; } b.position.x = nx; b.position.z = nz; b.rotation.y = angLerp(b.rotation.y, Math.atan2(dx, dz), Math.min(1, dt * 6)); BEAR.legs.forEach((l, k) => l.rotation.x = Math.sin(BEAR.t * 9 + (k % 2 ? 0 : Math.PI) + (k > 1 ? Math.PI / 2 : 0)) * 0.5); }
   else BEAR.legs.forEach(l => l.rotation.x *= 0.9);
   b.position.y = heightAt(b.position.x, b.position.z); if (BEAR.head) BEAR.head.rotation.y = Math.sin(BEAR.t * 2) * 0.2;
   if (!inside && !leave && BEAR.pause <= 0 && Math.hypot(player.x - b.position.x, player.z - b.position.z) < 1.5) { BEAR.pause = 2.6; roar(); const ax = player.x - b.position.x, az = player.z - b.position.z, al = Math.hypot(ax, az) || 1; [player.x, player.z] = collide(player.x + ax / al * 2.4, player.z + az / al * 2.4);
@@ -2302,7 +2303,7 @@ const LANDMARKS = () => { const H = CZ.houses[0]; const p = hLocal(H, 0, HD / 2 
   { n: '🛷 썰매장 꼭대기', x: 24, z: -59.5, ry: Math.PI, r: 5, at: [24, -61] }, { n: '🚡 곤돌라 승강장', x: 9.5, z: GON.zb + 4, ry: 0, r: 3.5, at: [9.5, GON.zb] },
   { n: '🍠 군고구마', x: 7.6, z: 6.4, ry: -2.4, r: 2.5, at: [10, 9] }, { n: '☕ 핫초코', x: -7.6, z: 6.4, ry: 2.4, r: 2.5, at: [-10, 9] }, { n: '🧣 목도리', x: 7.6, z: -6.4, ry: -0.8, r: 2.5, at: [10, -9] }, { n: '🎁 선물 포장', x: -7.6, z: -6.4, ry: 0.8, r: 2.5, at: [-10, -9] },
   { n: '🐟 붕어빵', x: 13.6, z: 4, ry: -Math.PI / 2, r: 2.5, at: [17, 4] }, { n: '🍢 어묵·떡볶이', x: -13.6, z: -4, ry: Math.PI / 2, r: 2.5, at: [-17, -4] }, { n: '✍ 소원 상자', x: 0, z: 10.2, ry: 0, r: 1.8, at: [0, 8.6] },
-  { n: '📸 포토부스', x: -30, z: -32.2, ry: 0, r: 2.4, at: [-30, -36] }, { n: '🧸 인형뽑기', x: -36, z: -32.6, ry: 0, r: 2.4, at: [-36, -36] }, { n: '🎯 사격장', x: -42, z: -33.2, ry: 0, r: 2.4, at: [-42, -36] }]; };
+  { n: '📸 포토부스', x: -30, z: -32.2, ry: 0, r: 2.4, at: [-30, -36] }, { n: '🧸 인형뽑기', x: -36, z: -32.6, ry: 0, r: 2.4, at: [-36, -36] }, { n: '🎯 사격장', x: -42, z: -33.2, ry: 0, r: 2.4, at: [-42, -36] }, { n: '🪩 클럽 입구', x: CLUB.x, z: CLUB.z - CLUB.D / 2 - 2.5, ry: Math.PI, r: 6, at: [CLUB.x, CLUB.z] }]; };
 const W2M = (x, z) => [(x - MAP.x0) / (MAP.x1 - MAP.x0) * MAP.W, (z - MAP.z0) / (MAP.z1 - MAP.z0) * MAP.H];
 const M2W = (u, v) => [MAP.x0 + u / MAP.W * (MAP.x1 - MAP.x0), MAP.z0 + v / MAP.H * (MAP.z1 - MAP.z0)];
 function mapOpen() { if (ED.hold) cancelHold(); let m = $('mapModal'); if (!m) mapBuild(); m = $('mapModal'); mapControls(); openModal('mapModal'); MAP.openAt = performance.now(); mapDraw(); clearInterval(MAP.iv); MAP.iv = setInterval(() => { if (S.modal !== 'mapModal') { clearInterval(MAP.iv); return; } mapDraw(); }, 300); }
@@ -2335,6 +2336,8 @@ function mapDraw() { const cv = $('mapCv'); if (!cv) return; const c = cv.getCon
   R(0, 0, 28, 28, '#d8cfc0', '#b8ad9c'); c.fillStyle = '#2a7a4a'; c.beginPath(); c.arc(...W2M(0, 0), 7.2 / (MAP.x1 - MAP.x0) * Wd, 0, 7); c.fill(); T('🎄', 0, 0.6, 22);
   // house
   { const [a, b] = W2M(H.x - HW / 2, H.z - HD / 2), [e, g] = W2M(H.x + HW / 2, H.z + HD / 2); c.fillStyle = '#b83a2e'; c.fillRect(a, b, e - a, g - b); c.fillStyle = 'rgba(255,255,255,.5)'; c.fillRect(a, b, e - a, (g - b) * 0.18); T('🏠 크리스마스 하우스', H.x, H.z + 1, 14, '#fff'); const [dx, dz] = W2M(H.door[0], H.door[1]); c.fillStyle = '#ffe08a'; c.fillRect(dx - 6, dz - 6, 12, 5); }
+  // arcade + club
+  R(-36, -36, 15, 3.6, '#7a3a8a', '#4a1a5a'); T('🎪 오락 코너', -36, -35.4, 13, '#fff'); R(CLUB.x, CLUB.z, CLUB.W, CLUB.D, '#2a1a3e', '#ff4ab8'); T('🪩 클럽', CLUB.x, CLUB.z + 0.8, 15, '#ffe8ff');
   // stalls
   [[10, 9, '🍠'], [-10, 9, '☕'], [10, -9, '🧣'], [-10, -9, '🎁'], [17, 4, '🐟'], [-17, -4, '🍢']].forEach(([x, z, e]) => { R(x, z, 3, 3, '#8a5a3a', '#5a3a22'); T(e, x, z + 0.6, 15); });
   // snowmen, bear
@@ -2363,7 +2366,7 @@ function spend(n, what) { if (ARC.coins < n) { say(`🪙 코인이 부족해요!
 function prizeShow() { const cnt = {}; ARC.prizes.forEach(p => cnt[p] = (cnt[p] || 0) + 1); openPanel({ title: '🎁 내 경품 · 🪙 ' + ARC.coins, info: ARC.prizes.length ? Object.keys(cnt).map(k => { const P = PRIZES.find(p => p[0] === k); return `${k} ${P ? P[1] : ''} × ${cnt[k]}`; }).join('<br>') : '아직 경품이 없어요. 인형뽑기나 사격장에서 받아 보세요!', buttons: ['닫기'], press() { closeModal(); } }); }
 
 // ---- snow piles → coins ----
-function pileSpot() { for (let t = 0; t < 60; t++) { const a = Math.random() * Math.PI * 2, r = 16 + Math.random() * 34, x = Math.cos(a) * r, z = Math.sin(a) * r; if (heightAt(x, z) > 0.05 || CZ.houses.some(H => inHouse(H, x, z, -2)) || colliders.some(c => x > c.x0 - 1.2 && x < c.x1 + 1.2 && z > c.z0 - 1.2 && z < c.z1 + 1.2)) continue; if (x > -45 && x < -26 && z > -42 && z < -28) continue; return [x, z]; } return [20 + Math.random() * 5, 10]; }
+function pileSpot() { for (let t = 0; t < 60; t++) { const a = Math.random() * Math.PI * 2, r = 16 + Math.random() * 34, x = Math.cos(a) * r, z = Math.sin(a) * r; if (heightAt(x, z) > 0.05 || CZ.houses.some(H => inHouse(H, x, z, -2)) || colliders.some(c => x > c.x0 - 1.2 && x < c.x1 + 1.2 && z > c.z0 - 1.2 && z < c.z1 + 1.2)) continue; if (x > -45 && x < -26 && z > -42 && z < -28) continue; if (clubIn(x, z, -2.5)) continue; return [x, z]; } return [20 + Math.random() * 5, 10]; }
 function pileMake(i) { const [x, z] = pileSpot(); const g = new THREE.Group(); g.position.set(x, 0, z); const w = CMat('snowW', () => MS(0xf8faff, 0.9)); for (let k = 0; k < 5; k++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.45 + Math.random() * 0.3, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), w); m.position.set((Math.random() - 0.5) * 0.9, 0, (Math.random() - 0.5) * 0.9); m.scale.y = 0.7 + Math.random() * 0.4; g.add(m); }
   const sh = new THREE.Group(); sh.position.set(0.55, 0.4, 0.2); sh.rotation.z = -0.4; g.add(sh); gc(sh, 0.025, 0.025, 1.1, CMat('stallp', () => MS(0x6a4020)), 0, 0.2, 0, 6); gb(sh, 0.32, 0.4, 0.04, CMat('shovel', () => MS(0xd8343a, 0.4, { metalness: 0.3 })), 0, -0.4, 0); gs(g, 0.06, MB(0xffd23a), 0, 1.0, 0); g.userData.dyn = true; scene.add(g);
   const hit = box(1.6, 1.2, 1.6, M.invisible, x, 0.6, z, { cast: false }); const P = { g, x, z, hit, busy: false }; ARC.piles[i] = P; interact(hit, '🧹 눈 치우기 (+3 🪙)', () => shovel(i), false); }
@@ -2447,6 +2450,112 @@ function shootStart() { if (MG.on) return; if (!spend(3, '사격 게임')) retur
     c.fillStyle = '#fff'; c.font = '800 16px sans-serif'; c.textAlign = 'left'; c.fillText(`⏱ ${Math.max(0, G2.t).toFixed(1)}  🔫 ${G2.shots}  ⭐ ${G2.score}점`, 10, 24);
     if ((G2.t <= 0 || G2.shots <= 0) && !G2.end) { G2.end = true; let msg; if (G2.score >= 8) { const p = PRIZES[Math.floor(Math.random() * PRIZES.length)]; ARC.prizes.push(p[0]); msg = `🎉 ${G2.score}점! 경품 <b>${p[0]} ${p[1]}</b> 획득!`; myBubble(p[0]); for (let k = 0; k < 4; k++) tone(784 + k * 131, 0.12, 'triangle', 0.05, k * 0.1); } else if (G2.score >= 5) { ARC.coins += 2; msg = `👍 ${G2.score}점! 아쉽지만 코인 2개 돌려받기 🪙`; } else msg = `${G2.score}점… 다음엔 더 잘할 수 있어요!`; coinSave(); $('mgInfo').innerHTML = msg; $('mgBtns').innerHTML = ''; mgBtn('🔁 다시 하기 (3 🪙)', () => { mgClose(); setTimeout(shootStart, 60); }); mgBtn('나가기', mgClose); } };
   requestAnimationFrame(loop); }
+
+// ================= 🪩 스노우 나이트 클럽 (오락 코너 맞은편) =================
+const CLUB = { x: -38, z: -19, W: 16, D: 14, H: 5, fee: 10, paid: false, tiles: [], lights: [], dancers: [], cast: [], step: 0, acc: 0, vol: 0, show: false, lyr: -1 };
+try { CLUB.paid = sessionStorage.getItem('cz_club') === '1'; } catch (e) { }
+function clubIn(x, z, m = 0) { return Math.abs(x - CLUB.x) < CLUB.W / 2 - m && Math.abs(z - CLUB.z) < CLUB.D / 2 - m; }
+const CL = (lx, lz) => [CLUB.x + lx, CLUB.z + lz];
+TEAS.push(['🍹', '무알콜 칵테일', 0xff5a8a], ['🥤', '톡톡 소다', 0x3ab0ff], ['🧃', '귤 주스', 0xffa83a], ['🍓', '딸기 스무디', 0xff7aa0]);
+function randLook() { return LK_OPTS.map((o, i) => Math.floor(Math.random() * LK_N[i])).map((v, i) => i === 3 ? (Math.random() < 0.3 ? 3 : 0) : v); }
+
+function buildClub() { const { x: X, z: Z, W, D, H } = CLUB; const wallM = CMat('clubWall', () => MS(0x2a1a3e, 0.8)), outM = CMat('clubOut', () => MS(0x3a2a5a, 0.7)), T = 0.3;
+  // shell (door gap on the south wall, facing the arcade)
+  const wall = (x0, x1, z0, z1) => { const w = x1 - x0, d = z1 - z0; box(w, H, d, outM, (x0 + x1) / 2, H / 2, (z0 + z1) / 2); colliders.push({ x0, x1, z0, z1 }); };
+  wall(X - W / 2, X - W / 2 + T, Z - D / 2, Z + D / 2); wall(X + W / 2 - T, X + W / 2, Z - D / 2, Z + D / 2); wall(X - W / 2, X + W / 2, Z + D / 2 - T, Z + D / 2);
+  wall(X - W / 2, X - 1.3, Z - D / 2, Z - D / 2 + T); wall(X + 1.3, X + W / 2, Z - D / 2, Z - D / 2 + T); box(2.6, H - 2.8, T, outM, X, 2.8 + (H - 2.8) / 2, Z - D / 2 + T / 2);
+  // inner lining + floor + ceiling
+  const g = grp(X, 0, Z, 0); [[0, D / 2 - T - 0.01, W - 2 * T, 0]].forEach(([lx, lz, w, ry]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, H), wallM); p.position.set(lx, H / 2, lz); p.rotation.y = ry + Math.PI; g.add(p); });
+  [[-W / 2 + T + 0.01, Math.PI / 2], [W / 2 - T - 0.01, -Math.PI / 2]].forEach(([lx, ry]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(D - 2 * T, H), wallM); p.position.set(lx, H / 2, 0); p.rotation.y = ry; g.add(p); });
+  gb(g, W - 2 * T, 0.06, D - 2 * T, CMat('clubFloor', () => MS(0x1a1424, 0.35, { metalness: 0.3 })), 0, 0.03, 0); gb(g, W, 0.2, D, CMat('clubCeil', () => MS(0x120c1a, 0.9)), 0, H - 0.1, 0);
+  gb(g, W + 0.6, 0.4, D + 0.6, CMat('snowW', () => MS(0xf8faff, 0.9)), 0, H + 0.2, 0);
+  // star dots on the walls
+  for (let i = 0; i < 60; i++) { const s = gs(g, 0.03, MB([0xffffff, 0xff8ad8, 0x8ad8ff][i % 3]), (Math.random() - 0.5) * (W - 1), 1.5 + Math.random() * 3.2, i % 2 ? D / 2 - T - 0.03 : -D / 2 + T + 0.03); s.userData.dyn = true; }
+  // ---- facade ----
+  tplane(6.4, 1.1, [['🪩 스노우 나이트 클럽', 52, '#ffe8ff', 0.55, 900]], { x: X, y: 3.6, z: Z - D / 2 - 0.02, ry: Math.PI, pw: 640, basic: true, bg: '#3a0a4a' });
+  [[-3.4, 0xff4ab8], [3.4, 0x4ad8ff]].forEach(([dx, c]) => box(0.12, 3.2, 0.12, MB(c), X + dx, 2.2, Z - D / 2 - 0.08, { cast: false }));
+  box(6.9, 0.12, 0.12, MB(0xffd23a), X, 4.25, Z - D / 2 - 0.08, { cast: false }); bulbLine([X - 7.8, 4.9, Z - D / 2 - 0.2], [X + 7.8, 4.9, Z - D / 2 - 0.2], 30, XC, 0.25);
+  tplane(2.4, 0.5, [[`입장 🪙 ${CLUB.fee}코인`, 40, '#ffd23a', 0.55, 900]], { x: X + 2.6, y: 1.5, z: Z - D / 2 - 0.05, ry: Math.PI, pw: 384, basic: true, bg: '#1a0a2a' });
+  // velvet rope + door barrier
+  [-1.6, 1.6].forEach(dx => { box(0.1, 0.9, 0.1, CMat('gold', () => MS(0xd8b040, 0.3, { metalness: 0.7 })), X + dx, 0.45, Z - D / 2 - 1.2); });
+  CLUB.rope = box(3.2, 0.06, 0.06, CMat('rope', () => MS(0xc81a3a, 0.6)), X, 0.8, Z - D / 2 - 1.2, { cast: false }); CLUB.rope.userData.dyn = true; CLUB.rope.visible = !CLUB.paid;
+  CLUB.bar = { x0: X - 1.3, x1: X + 1.3, z0: Z - D / 2 - 0.3, z1: Z - D / 2 + 0.4 }; if (!CLUB.paid) colliders.push(CLUB.bar);
+  interact(box(3.0, 2.6, 1.2, M.invisible, X, 1.3, Z - D / 2 - 0.5, { cast: false }), '🪩 클럽 입장 (🪙 ' + CLUB.fee + ')', clubEnter, false);
+  { const pg = grp(X, 0, Z - D / 2 - 5.5, 0); gb(pg, 2.4, 0.04, 10, CMat('arcWalk', () => MS(0xffffff, 0.85, { map: XT.walk })), 0, 0.025, 0); }
+  // ---- inside: dance floor ----
+  const df = grp(X + 1, 0.07, Z - 0.5, 0); df.userData.dyn = true; for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.05, 0.96), new THREE.MeshBasicMaterial({ color: 0x222222 })); m.position.set(-2.5 + i, 0, -2.5 + j); df.add(m); CLUB.tiles.push(m); }
+  interact(box(6, 0.3, 6, M.invisible, X + 1, 0.15, Z - 0.5, { cast: false }), '💃 신나게 춤추기', clubDance, false);
+  // ---- mirror ball + beams + lights ----
+  const mb = grp(X + 1, H - 1.4, Z - 0.5, 0); mb.userData.dyn = true; gc(mb, 0.01, 0.01, 1.2, CMat('steel', () => MS(0xc8ccd4, 0.2, { metalness: 0.8 })), 0, 0.9, 0, 4);
+  const ball = new THREE.Mesh(new THREE.IcosahedronGeometry(0.45, 2), new THREE.MeshBasicMaterial({ map: canvasTex(128, 64, c => { for (let i = 0; i < 32; i++) for (let j = 0; j < 16; j++) { const v = 150 + Math.random() * 105 | 0; c.fillStyle = `rgb(${v},${v},${v + 10})`; c.fillRect(i * 4, j * 4, 3.4, 3.4); } }) })); mb.add(ball); CLUB.ball = ball;
+  const beams = new THREE.Group(); mb.add(beams); CLUB.beams = beams; const bc = [0xff4ab8, 0x4ad8ff, 0xffd23a, 0x8aff6a, 0xb86aff, 0xff7a3a];
+  bc.forEach((c, k) => { const cone = new THREE.Mesh(new THREE.ConeGeometry(0.5, 5.5, 12, 1, true), new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.13, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); cone.geometry.translate(0, -2.75, 0); const a = k / bc.length * Math.PI * 2; cone.rotation.set(0.9, a, 0, 'YXZ'); beams.add(cone); });
+  bc.slice(0, 3).forEach((c, k) => { const L = new THREE.PointLight(c, 1.3, 13, 1.5); L.position.set(X + 1 + Math.cos(k * 2.1) * 3, 3.6, Z - 0.5 + Math.sin(k * 2.1) * 3); scene.add(L); CLUB.lights.push(L); });
+  // ---- stage + musical cast ----
+  const st = grp(X, 0, Z + D / 2 - 1.9, 0); gb(st, 10, 0.6, 3, CMat('stage', () => MS(0x5a2a1a, 0.5)), 0, 0.3, 0); gb(st, 10.2, 0.08, 0.15, CMat('gold', () => MS(0xd8b040, 0.3, { metalness: 0.7 })), 0, 0.62, -1.5);
+  for (let k = 0; k < 22; k++) { const c = new THREE.Mesh(new THREE.PlaneGeometry(0.5, H - 0.7), CMat('curtR', () => MS(0xa8182a, 0.85, { side: THREE.DoubleSide }))); c.position.set(-5 + k * 0.47, (H - 0.7) / 2 + 0.6, 1.25 + (k % 2) * 0.06); st.add(c); }
+  gb(st, 10.4, 0.7, 0.2, CMat('curtR', () => MS(0xa8182a, 0.85, { side: THREE.DoubleSide })), 0, H - 0.6, -1.2); for (let k = 0; k < 11; k++) gs(st, 0.07, MB(0xfff0a0), -4.6 + k * 0.92, 0.66, -1.4);
+  tplane(4, 0.55, [['🎭 오늘의 뮤지컬 · 스노우빌리지의 밤', 34, '#ffe8b0', 0.55, 900]], { x: 0, y: H - 0.6, z: -1.32, ry: Math.PI, parent: st, pw: 512, basic: true, bg: '#5a0a1a' });
+  colliders.push({ x0: X - 5, x1: X + 5, z0: Z + D / 2 - 3.4, z1: Z + D / 2 }); CLUB.stageZ = Z + D / 2 - 1.9;
+  const spot = new THREE.Mesh(new THREE.ConeGeometry(2.0, 4.4, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff4c0, transparent: true, opacity: 0.0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); spot.position.set(X, 0.6 + 2.2, CLUB.stageZ); spot.userData.dyn = true; scene.add(spot); CLUB.spot = spot;
+  const looks = [[1, 1, 1, 4, 3, 6, 0, 0, 1, 0, 2, 4, 3, 1, 0], [3, 3, 0, 1, 2, 3, 2, 3, 2, 1, 5, 0, 0, 0, 2], [2, 2, 4, 0, 5, 1, 3, 6, 3, 2, 0, 2, 1, 3, 1]];
+  ['루돌프 역', '눈꽃 요정 역', '산타 역'].forEach((nm, k) => { const a = buildAvatar(lkValid(looks[k])); a.position.set(X - 2.4 + k * 2.4, 0.6, CLUB.stageZ - 0.2); a.rotation.y = Math.PI; a.userData.dyn = true; scene.add(a); const tag = nameSprite('🎭 ' + nm, '#ffe8b0', true); tag.position.y = 2.4; a.add(tag); CLUB.cast.push(a); });
+  interact(box(10, 2.5, 1.5, M.invisible, X, 1.8, CLUB.stageZ - 0.8, { cast: false }), '🎭 뮤지컬 공연 보기', clubShowInfo, false);
+  // ---- bar (west) ----
+  const bar = grp(X - W / 2 + 2.1, 0, Z - 0.5, 0); gb(bar, 0.8, 1.1, 6.5, CMat('barC', () => MS(0x3a1a4a, 0.4)), 0, 0.55, 0); gb(bar, 1.0, 0.08, 6.7, CMat('barTop', () => MS(0xe8e0f0, 0.15, { metalness: 0.3 })), 0, 1.12, 0); gb(bar, 0.05, 0.06, 6.5, MB(0xff4ab8), 0.42, 0.2, 0);
+  gb(bar, 0.5, 2.2, 6.5, CMat('barShelf', () => MS(0x241430, 0.6)), -1.55, 1.7, 0); for (let k = 0; k < 18; k++) { const c = [0xff5a8a, 0x3ab0ff, 0xffa83a, 0x8aff6a, 0xffd23a][k % 5]; gc(bar, 0.07, 0.07, 0.3, CMat('bottle' + (k % 5), () => MS(c, 0.1, { transparent: true, opacity: 0.8, emissive: c, emissiveIntensity: 0.4 })), -1.35, 1.35 + Math.floor(k / 9) * 0.6, -2.8 + (k % 9) * 0.7, 10); }
+  tplane(3, 0.5, [['🍹 SNOW BAR', 40, '#ff8ad8', 0.55, 900]], { x: -1.28, y: 3.1, z: 0, ry: Math.PI / 2, parent: bar, pw: 384, basic: true, bg: '#1a0a2a' });
+  colliders.push({ x0: X - W / 2, x1: X - W / 2 + 2.6, z0: Z - 3.8, z1: Z + 2.8 });
+  const bt = buildAvatar(lkValid([0, 1, 0, 0, 0, 4, 0, 5, 0, 5, 0, 0, 0, 0, 5])); bt.position.set(X - W / 2 + 1.2, 0, Z - 0.5); bt.rotation.y = Math.PI / 2; bt.userData.dyn = true; scene.add(bt); const btag = nameSprite('바텐더 눈송이', '#ffe8b0', true); btag.position.y = 2.4; bt.add(btag); CLUB.bt = bt;
+  interact(box(1.2, 2, 6.5, M.invisible, X - W / 2 + 2.3, 1, Z - 0.5, { cast: false }), '🍹 음료 주문하기', clubBar, false);
+  for (let k = 0; k < 4; k++) { const sz = Z - 3 + k * 1.6, sx = X - W / 2 + 3.15; const s = grp(sx, 0, sz, 0); gc(s, 0.22, 0.22, 0.08, CMat('stoolT', () => MS(0xff4ab8, 0.5)), 0, 0.72, 0, 14); gc(s, 0.04, 0.04, 0.7, CMat('steel', () => MS(0xc8ccd4, 0.2, { metalness: 0.8 })), 0, 0.35, 0, 6); gc(s, 0.2, 0.2, 0.03, CMat('steel', () => MS(0xc8ccd4, 0.2, { metalness: 0.8 })), 0, 0.02, 0, 12);
+    const seat = { x: sx, z: sz, y: 0.76, ry: -Math.PI / 2 }; CZ.seats.push(seat); interact(box(0.5, 0.8, 0.5, M.invisible, sx, 0.4, sz, { cast: false }), '🪑 바 의자에 앉기', () => sitAt(seat), false); }
+  // ---- lounge tables (east), facing the stage ----
+  for (let k = 0; k < 3; k++) { const tx = X + W / 2 - 2.3, tz = Z - 4.5 + k * 3; const t = grp(tx, 0, tz, 0); gc(t, 0.45, 0.45, 0.05, CMat('ltab', () => MS(0x1a1a24, 0.2, { metalness: 0.5 })), 0, 0.75, 0, 18); gc(t, 0.05, 0.05, 0.75, CMat('steel', () => MS(0xc8ccd4, 0.2, { metalness: 0.8 })), 0, 0.37, 0, 6); gs(t, 0.08, MB(0xffd890), 0, 0.85, 0);
+    colliders.push({ x0: tx - 0.4, x1: tx + 0.4, z0: tz - 0.4, z1: tz + 0.4 });
+    [-0.75, 0.75].forEach(dx => { const sx = tx + dx, sz = tz - 0.55; const s = grp(sx, 0, sz, 0); gb(s, 0.6, 0.45, 0.55, CMat('sofaP', () => MS(0x7a2a9a, 0.8)), 0, 0.22, 0); gb(s, 0.6, 0.5, 0.12, CMat('sofaP', () => MS(0x7a2a9a, 0.8)), 0, 0.6, -0.24);
+      const seat = { x: sx, z: sz + 0.05, y: 0.46, ry: 0 }; CZ.seats.push(seat); interact(box(0.6, 0.9, 0.6, M.invisible, sx, 0.45, sz, { cast: false }), '🛋 앉아서 공연 보기', () => sitAt(seat), false); }); }
+  // ---- NPC dancers ----
+  for (let k = 0; k < 4; k++) { const a = buildAvatar(lkValid(randLook())); const ang = k / 4 * Math.PI * 2; a.userData.c = [X + 1 + Math.cos(ang) * 1.8, Z - 0.5 + Math.sin(ang) * 1.8]; a.position.set(a.userData.c[0], 0.1, a.userData.c[1]); a.userData.dyn = true; a.userData.ph = k * 1.3; scene.add(a); CLUB.dancers.push(a); }
+  every(clubTick); }
+
+function clubEnter() { if (CLUB.paid) return clubGoIn(); if (!spend(CLUB.fee, '클럽 입장')) return; CLUB.paid = true; try { sessionStorage.setItem('cz_club', '1'); } catch (e) { } const i = colliders.indexOf(CLUB.bar); if (i >= 0) colliders.splice(i, 1); CLUB.rope.visible = false;
+  for (let k = 0; k < 4; k++) tone(523 * Math.pow(1.26, k), 0.12, 'triangle', 0.05, k * 0.09); say('🎟 입장 완료! 오늘은 자유롭게 드나들 수 있어요 🪩', 3); clubGoIn(); }
+function clubGoIn() { player.x = CLUB.x; player.z = CLUB.z - CLUB.D / 2 + 1.6; yaw = Math.PI; pitch = 0; say('🪩 <b>스노우 나이트 클럽</b>에 오신 걸 환영해요!<br>💃 무대 앞 바닥에서 춤추고 · 🍹 바에서 음료 · 🛋 소파에 앉아 🎭 뮤지컬 공연을 봐요', 4.5); }
+function clubDance() { if (ME.sitting && S.sit) S.sit(); ME.anim = 'dance'; ME.animT = 9; ME.emo = { e: 1, k: nextK() }; myBubble('💃'); say('💃 둠칫 둠칫~ 신난다!', 1.8); }
+function clubBar() { if (ED.hold) return; const D = TEAS.slice(6); openPanel({ title: '🍹 SNOW BAR', info: '바텐더 눈송이: "어떤 음료로 드릴까요? (모두 무알콜이에요)"', buttons: D.map(t => t[0] + ' ' + t[1]).concat(['괜찮아요']), press(i) { closeModal(); if (i >= D.length) return; say('🍸 착착착… 쉐킷 쉐킷!', 1.3); for (let k = 0; k < 8; k++) noise(0.06, 'bandpass', 2500, 0.05, 2, k * 0.12);
+    setTimeout(() => { ME.cup = 6 + i; ME.sips = 5; makeCupView(); tone(1175, 0.12, 'triangle', 0.05); say(`${D[i][0]} <b>${D[i][1]}</b> 나왔습니다! ` + KK('<b>V</b> 마시기 · <b>6</b> 건배', '<b>☰ 메뉴</b>에서 마시기 · 건배'), 3); bubbleOn(CLUB.bt, '맛있게 드세요~ 🍹', 2.3); }, 1100); } }); }
+const SHOW_LEN = 42, SHOW_CYCLE = 100;
+const LYRICS = ['🎵 하얀 눈이 소복소복~ 마을 위에 내려와', '🎵 반짝이는 불빛 따라 우리 함께 걸어가요', '🎵 루돌프의 빨간 코가 길을 밝혀 줄 거야', '🎵 따뜻한 차 한 잔에 마음까지 녹아요', '🎵 손을 잡고 빙글빙글 눈꽃처럼 춤을 춰요', '🎵 오늘 밤은 모두가 산타가 되는 밤!', '🎵 메리~ 메리~ 크리스마스! 🎄', '👏 감사합니다! 🙇'];
+function showPhase() { const t = (Date.now() / 1000) % SHOW_CYCLE; return { on: t < SHOW_LEN, t, wait: SHOW_CYCLE - t }; }
+function clubShowInfo() { const p = showPhase(); say(p.on ? '🎭 지금 공연 중이에요! 🛋 소파에 앉아서 감상해 봐요' : `🎭 다음 뮤지컬 공연까지 <b>${Math.ceil(p.wait)}초</b> — 🛋 소파에 앉아 기다려요`, 3); }
+
+// ---- music (original loop) ----
+const NT = n => 440 * Math.pow(2, (n - 69) / 12);
+const CH = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]];
+const MEL = [76, 0, 74, 76, 79, 0, 76, 74, 72, 0, 74, 72, 69, 0, 0, 0, 72, 0, 74, 76, 77, 0, 76, 74, 74, 0, 72, 71, 67, 0, 0, 0];
+const SHOW_MEL = [72, 74, 76, 79, 76, 74, 72, 0, 69, 72, 74, 76, 74, 72, 69, 0, 77, 76, 74, 72, 74, 76, 79, 0, 79, 77, 76, 74, 72, 0, 72, 0];
+function clubBeat(step, v, show) { const bar = Math.floor(step / 16) % 4, s = step % 16, ch = CH[bar];
+  if (!show) { if (s % 4 === 0) { tone(110, 0.16, 'sine', 0.22 * v, 0, 0.35); } if (s % 8 === 4) noise(0.12, 'bandpass', 1600, 0.09 * v, 1.2); if (s % 2 === 1) noise(0.03, 'highpass', 8000, 0.035 * v);
+    if (s % 4 === 2 || s === 0) tone(NT(ch[0] - 12), 0.18, 'sawtooth', 0.05 * v); if (s % 8 === 0) ch.forEach(n => tone(NT(n + 12), 0.25, 'square', 0.012 * v));
+    if (s % 2 === 0) { const m = MEL[(step / 2 | 0) % MEL.length]; if (m) tone(NT(m), 0.2, 'triangle', 0.045 * v); } }
+  else { if (s % 8 === 0) { tone(NT(ch[0] - 12), 0.9, 'sine', 0.08 * v); ch.forEach((n, k) => tone(NT(n + 12), 0.9, 'triangle', 0.018 * v, k * 0.04)); } if (s % 4 === 0) noise(0.04, 'highpass', 7000, 0.02 * v);
+    if (s % 2 === 0) { const m = SHOW_MEL[(step / 2 | 0) % SHOW_MEL.length]; if (m) { tone(NT(m), 0.32, 'sine', 0.07 * v); tone(NT(m) * 2, 0.32, 'sine', 0.012 * v); } } } }
+
+function clubTick(dt) { const inside = clubIn(player.x, player.z, 0.3); const near = Math.hypot(player.x - CLUB.x, player.z - (CLUB.z - CLUB.D / 2)); CLUB.inside = inside;
+  const target = inside ? 1 : near < 12 ? 0.25 * (1 - near / 12) : 0; CLUB.vol += (target - CLUB.vol) * Math.min(1, dt * 3);
+  const ph = showPhase(); if (ph.on !== CLUB.show) { CLUB.show = ph.on; if (inside) say(ph.on ? '🎭 <b>뮤지컬 「스노우빌리지의 밤」</b> 공연이 시작됩니다! 조명이 무대로~' : '👏👏 공연이 끝났어요! 다시 신나는 댄스 타임 🪩', 3.5); if (!ph.on && CLUB.vol > 0.05) for (let k = 0; k < 20; k++) noise(0.05, 'bandpass', 2000 + Math.random() * 2000, 0.05 * CLUB.vol, 2, k * 0.06); CLUB.lyr = -1; }
+  if (CLUB.vol > 0.02 && AC && !S.paused) { CLUB.acc += dt; const st = 60 / 118 / 4; while (CLUB.acc >= st) { CLUB.acc -= st; clubBeat(CLUB.step++, CLUB.vol, CLUB.show); } } else CLUB.acc = 0;
+  if (Math.hypot(player.x - CLUB.x, player.z - CLUB.z) > 30) return;
+  const t = clockT, beat = (CLUB.step % 4) / 4; CLUB.ball.rotation.y += dt * 0.6; CLUB.beams.rotation.y += dt * (CLUB.show ? 0.2 : 0.9); CLUB.beams.children.forEach(c => c.material.opacity = CLUB.show ? 0.04 : 0.12 + Math.sin(t * 3 + c.rotation.y) * 0.04);
+  CLUB.lights.forEach((L, k) => { L.intensity = CLUB.show ? 0.25 : 1.1 + Math.sin(t * 4 + k * 2) * 0.4; L.position.x = CLUB.x + 1 + Math.cos(t * 0.8 + k * 2.1) * 3; L.position.z = CLUB.z - 0.5 + Math.sin(t * 0.8 + k * 2.1) * 3; });
+  CLUB.spot.material.opacity += ((CLUB.show ? 0.16 : 0) - CLUB.spot.material.opacity) * Math.min(1, dt * 2);
+  if ((CLUB.tAcc = (CLUB.tAcc || 0) + dt) > 0.24) { CLUB.tAcc = 0; const hues = [0.9, 0.55, 0.13, 0.3, 0.75]; CLUB.tiles.forEach((m, i) => { const on = CLUB.show ? (i + CLUB.step) % 9 === 0 : Math.random() < 0.55; m.material.color.setHSL(hues[(i + (CLUB.step >> 3)) % 5], 0.9, on ? (CLUB.show ? 0.25 : 0.5) : 0.08); }); }
+  CLUB.dancers.forEach((a, k) => { const ph2 = a.userData.ph; a.position.x = a.userData.c[0] + Math.sin(t * 0.7 + ph2) * 0.4; a.position.z = a.userData.c[1] + Math.cos(t * 0.6 + ph2) * 0.4; a.rotation.y = CLUB.show ? Math.atan2(CLUB.x - a.position.x, CLUB.stageZ - a.position.z) : t * 0.8 + ph2; animAvatar(a, CLUB.show ? (Math.sin(t + k) > 0.6 ? 'cheers' : 'stand') : 'dance', t * 7 + ph2, t); });
+  animAvatar(CLUB.bt, Math.sin(t * 0.5) > 0.7 ? 'wave' : 'stand', t * 7, t);
+  const poses = ['dance', 'wave', 'heart', 'dance', 'cheers', 'dance', 'heart', 'bow']; const li = CLUB.show ? Math.min(LYRICS.length - 1, Math.floor(ph.t / (SHOW_LEN / LYRICS.length))) : -1;
+  CLUB.cast.forEach((a, k) => { a.position.x = CLUB.x - 2.4 + k * 2.4 + (CLUB.show ? Math.sin(t * 0.9 + k * 2) * 0.6 : 0); animAvatar(a, CLUB.show ? poses[(li + k) % poses.length] : 'stand', t * 6 + k, t); });
+  if (li !== CLUB.lyr) { CLUB.lyr = li; if (li >= 0) { const k = li === LYRICS.length - 1 ? 1 : li % 3; bubbleOn(CLUB.cast[k], LYRICS[li], 2.6); if (inside && li === LYRICS.length - 1) myBubble('👏'); } } }
 
 // ================= 산타마을 — main =================
 const CG = { started: false, hudT: 0, lastIn: null };
